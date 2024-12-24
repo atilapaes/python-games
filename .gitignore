@@ -1,4 +1,10 @@
-.idea/*
+# User-specific stuff:
+ .idea/.gitignore
+ .idea/inspectionProfiles/profiles_settings.xml
+ .idea/misc.xml
+ .idea/modules.xml
+ .idea/python-games.iml
+ .idea/vcs.xml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
