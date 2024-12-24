@@ -66,6 +66,15 @@ def create_workspace():
     return(workspace)
         
 
+def remove_value_from_vec(vec,num):
+    vec[np.where(vec==num)[0][0]]=0
+    return(vec)
+
+def num_possibilities(vec):
+    return(np.trim_zeros(np.unique(vec)).size)
+    
+    
+
 #view the file
 print(raw)
 
