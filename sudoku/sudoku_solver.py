@@ -67,14 +67,41 @@ def create_workspace():
         
 
 def remove_value_from_vec(vec,num):
+    """
+    Return a vector of same size, but the values num is changed by zero
+    """
     vec[np.where(vec==num)[0][0]]=0
     return(vec)
 
+def shrink_vec(vec):
+    """
+    Remove the zeros from a vector
+    """
+    return(np.trim_zeros(np.unique(vec)))
+
+
 def num_possibilities(vec):
-    return(np.trim_zeros(np.unique(vec)).size)
-    
+    """
+    Return the number of possible values (not zero) we still have i a vector
+    """
+    return(shrink_vec(vec).size)
+
+
+#=======    
+workspace=create_workspace()
+# for the array workspace: i is the row, j is the column, j is the vec element
+
+# loop for the rows
+for i in range(9):
+    keys = shrink_vec(np.unique(raw[i,:])) # there are the values I need to remove from the first row
+    for j in range(9):
+        for key in keys:
+            workspace[i,j]=remove_value_from_vec(workspace[i,j],key)
     
 
+
+
+
 #view the file
-print(raw)
+#print(raw)
 
