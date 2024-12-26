@@ -80,7 +80,7 @@ def shrink_vec(vec):
     return(np.trim_zeros(np.unique(vec)))
 
 
-def num_possibilities(vec):
+def num_options(vec):
     """
     Return the number of possible values (not zero) we still have i a vector
     """
@@ -94,35 +94,55 @@ def remove_others_than(vec,num):
             vec[i]=0
     return(vec)    
 
+def update_sol(ws,sol):
+    for i in range(9):
+        for j in range(9):
+            if sol[i,j] == 0 and num_options(ws[i,j])==1:
+                sol[i,j]=shrink_vec(ws[i,j])[0]
+                print('new key found in',i,j,',as',shrink_vec(ws[i,j])[0])
+    return(sol)
 
-def initial_conditions(ws):
+def initial_conditions(ws,sol):
     # Step 1: write the initial conditions from raw to workspace
     for i in range(9):
         for j in range(9):
-            if raw[i,j] !=0:
-                ws[i,j]= remove_others_than(ws[i,j],raw[i,j])
+            if sol[i,j] !=0:
+                ws[i,j]= remove_others_than(ws[i,j],sol[i,j])
+            
     return(ws)
 
-def loop_rows(ws,raw):
+def loop_rows(ws,sol):
     # loop for the rows
+    print('Loop over rows')
     for i in range(9):
-        keys = shrink_vec(np.unique(raw[i,:])) # there are the values I need to remove from the first row
+        keys = shrink_vec(np.unique(sol[i,:])) # there are the values I need to remove from the first row
         for j in range(9):
-            for key in keys:
-                if num_possibilities(ws[i,j]) >1 and key in ws[i,j]: #otherwise, it will remove the key from its native place
-                    ws[i,j]=remove_value_from_vec(ws[i,j],key)
-    return(ws)
+            if sol[i,j] == 0:
+                for key in keys:
+                    if num_options(ws[i,j]) >1 and key in ws[i,j]: #otherwise, it will remove the key from its native place
+                        ws[i,j]=remove_value_from_vec(ws[i,j],key)
+
+    sol=update_sol(ws,sol)
+                        
+    return([ws,sol])
 
 
-def loop_columns(ws,raw):
+def loop_columns(ws,sol):
     #loop for the columns
+    print('Loop over column')
     for j in range(9):
         keys = shrink_vec(np.unique(raw[:,j])) # there are the values I need to remove from the first row
         for i in range(9):
-            for key in keys:
-                if num_possibilities(ws[i,j]) >1 and key in ws[i,j]: #otherwise, it will remove the key from its native place
-                    ws[i,j]=remove_value_from_vec(ws[i,j],key)    
-    return(ws)
+            if sol[i,j] == 0:
+                for key in keys:
+                    if num_options(ws[i,j]) >1 and key in ws[i,j]: #otherwise, it will remove the key from its native place
+                        ws[i,j]=remove_value_from_vec(ws[i,j],key)    
+    
+    sol=update_sol(ws,sol)
+    
+    return([ws,sol])
+
+
 
 #=======    
 # Aplly firt checking, with all the rows ans columns
@@ -132,21 +152,26 @@ workspace=create_workspace()
 print('step 0 done. N zeros:',np.count_nonzero(workspace==0))
 
 #step 1: apply the initial condition of the sudoku
-workspace=initial_conditions(workspace)
+workspace=initial_conditions(workspace,solution)
 print('step 1 done. N zeros:',np.count_nonzero(workspace==0))
 
 #step 2: loop over rows, and remove possible values for the keys present in the row
-workspace=loop_rows(workspace,raw)
+[workspace,solution]=loop_rows(workspace,solution)
 print('step 2 done. N zeros:',np.count_nonzero(workspace==0))
 
 #step 3: loop over columns, and remove possible values for the keys present in the columns
-workspace=loop_columns(workspace,raw)
+[workspace,solution]=loop_columns(workspace,solution)
 print('step 3 done. N zeros:',np.count_nonzero(workspace==0))
 
+#loop_over_blocks(workspace,raw)
+
+# %%
 
 
-for i in range(9):
-    for j in range(9):
-        if num_possibilities(workspace[i,j])==1 and raw[i,j] ==0:
-            print(i,j)
-# any output here would bring a new key value
+
+# %%
+
+            
+
+
+
